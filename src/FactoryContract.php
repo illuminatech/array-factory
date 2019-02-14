@@ -30,11 +30,11 @@ interface FactoryContract
      * Configures existing object applying given configuration to it.
      *
      * @param  object  $object object to be configured.
-     * @param  array  $config configuration to be applied.
+     * @param  iterable  $config configuration to be applied.
      * @param  Container|null  $container DI container instance.
-     * @return void
+     * @return object configured object.
      */
-    public function configure($object, array $config, Container $container = null): void;
+    public function configure($object, iterable $config, Container $container = null);
 
     /**
      * Resolves the specified reference into the actual object and makes sure it is of the specified type.
