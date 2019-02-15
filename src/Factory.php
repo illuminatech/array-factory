@@ -70,15 +70,15 @@ class Factory implements FactoryContract
 
         if (is_array($definition)) {
             $class = Arr::pull($definition, '__class');
-            $parameters = Arr::pull($definition, '__construct()');
+            $constructArgs = Arr::pull($definition, '__construct()', []);
             $config = $definition;
         } else {
             $class = $definition;
-            $parameters = [];
+            $constructArgs = [];
             $config = [];
         }
 
-        $object = $container->make($class, $parameters);
+        $object = $container->make($class, $constructArgs);
 
         return $this->configure($object, $config);
     }
@@ -161,7 +161,7 @@ class Factory implements FactoryContract
      * does not alters object state, but creates new object instead.
      *
      * @param  object  $original original object.
-     * @param  object|mixed $candidate candidate value.
+     * @param  object|mixed  $candidate candidate value.
      * @return object new object to be used.
      */
     private function chooseNewObject($original, $candidate)

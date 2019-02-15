@@ -1,7 +1,7 @@
 {
     "name": "illuminatech/array-factory",
     "description": "Allows DI aware object creation from array definition",
-    "keywords": ["laravel", "array", "factory"],
+    "keywords": ["laravel", "factory", "array", "configuration", "config"],
     "license": "BSD-3-Clause",
     "support": {
         "issues": "https://github.com/illuminatech/array-factory/issues",
@@ -15,6 +15,9 @@
         }
     ],
     "require": {
+        "illuminate/support": "^5.6"
+    },
+    "require-dev": {
         "illuminate/container": "^5.6"
     },
     "autoload": {
