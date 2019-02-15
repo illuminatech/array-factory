@@ -19,4 +19,18 @@ class CarRent
         $this->person = $person;
         $this->car = $car;
     }
+
+    public function setCar(Car $car)
+    {
+        $this->car = $car;
+
+        return $this;
+    }
+
+    public function setPerson(Person $person)
+    {
+        $this->person = $person;
+
+        return $person;
+    }
 }

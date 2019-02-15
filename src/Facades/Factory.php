@@ -18,7 +18,7 @@ use Illuminatech\ArrayFactory\FactoryContract;
  *
  * @see \Illuminatech\ArrayFactory\FactoryContract
  *
- * @method static object make(array|\Closure|string $definition, \Illuminate\Contracts\Container\Container $container = null)
+ * @method static object make(array|string $definition, \Illuminate\Contracts\Container\Container $container = null)
  * @method static object configure(object $object, iterable $config, \Illuminate\Contracts\Container\Container $container = null)
  * @method static object ensure(array|\Closure|string $reference, string $type = null, \Illuminate\Contracts\Container\Container $container = null)
  *

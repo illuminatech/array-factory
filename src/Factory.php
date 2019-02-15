@@ -15,6 +15,7 @@ use Illuminate\Contracts\Container\Container;
  * Factory
  *
  * @see FactoryContract
+ * @see Definition
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
@@ -68,8 +69,15 @@ class Factory implements FactoryContract
     {
         $container = $container ?? $this->getContainer();
 
+        if ($definition instanceof Definition) {
+            $definition = $definition->definition;
+        }
+
         if (is_array($definition)) {
             $class = Arr::pull($definition, '__class');
+            if ($class === null) {
+                throw new InvalidArgumentException('Array definition must contain "__class" key.');
+            }
             $constructArgs = Arr::pull($definition, '__construct()', []);
             $config = $definition;
         } else {
@@ -77,6 +85,8 @@ class Factory implements FactoryContract
             $constructArgs = [];
             $config = [];
         }
+
+        $constructArgs = $this->makeIfDefinitionArray($constructArgs, $container);
 
         $object = $container->make($class, $constructArgs);
 
@@ -99,7 +109,7 @@ class Factory implements FactoryContract
 
             if (substr($action, -2) === '()') {
                 // method call
-                $result = call_user_func_array([$object, substr($action, 0, -2)], $arguments);
+                $result = call_user_func_array([$object, substr($action, 0, -2)], $this->makeIfDefinitionArray($arguments, $container));
 
                 // handle immutable methods
                 $object = $this->chooseNewObject($object, $result);
@@ -109,7 +119,7 @@ class Factory implements FactoryContract
 
             if (method_exists($object, $setter = 'set'.$action)) {
                 // setter
-                $result = call_user_func([$object, $setter], $arguments);
+                $result = call_user_func([$object, $setter], $this->makeIfDefinition($arguments, $container));
 
                 // handle immutable methods
                 $object = $this->chooseNewObject($object, $result);
@@ -119,7 +129,7 @@ class Factory implements FactoryContract
 
             // property
             if (property_exists($object, $action) || method_exists($object, '__set')) {
-                $object->$action = $arguments;
+                $object->$action = $this->makeIfDefinition($arguments, $container);
 
                 continue;
             }
@@ -171,6 +181,41 @@ class Factory implements FactoryContract
         }
 
         return $original;
+    }
+
+    /**
+     * Checks if given value is a array actory compatible definition, performs make if it is, skips - if not.
+     *
+     * @param  mixed  $candidate candidate value to be checked.
+     * @param  Container  $container DI container to be used for making object.
+     * @return object|mixed resolved object or intact candidate.
+     */
+    private function makeIfDefinition($candidate, Container $container = null)
+    {
+        $container = $container ?? $this->getContainer();
+
+        if ($candidate instanceof Definition) {
+            return $this->make($candidate->definition, $container);
+        }
+
+        return $candidate;
+    }
+
+    /**
+     * @param  iterable  $candidates candidate values to be checked.
+     * @param  Container  $container DI container to be used for making objects.
+     * @return array
+     */
+    private function makeIfDefinitionArray(iterable $candidates, Container $container = null): array
+    {
+        $container = $container ?? $this->getContainer();
+
+        $result = [];
+        foreach ($candidates as $key => $value) {
+            $result[$key] = $this->makeIfDefinition($value, $container);
+        }
+
+        return $result;
     }
 
     /**

@@ -20,7 +20,7 @@ interface FactoryContract
     /**
      * Creates new object from the definition.
      *
-     * @param  array|\Closure|string  $definition
+     * @param  array|string  $definition
      * @param  Container|null  $container DI container instance.
      * @return object created object.
      */

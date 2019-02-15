@@ -2,6 +2,7 @@
 
 namespace Illuminatech\ArrayFactory\Test;
 
+use Illuminatech\ArrayFactory\Definition;
 use InvalidArgumentException;
 use Illuminate\Container\Container;
 use Illuminatech\ArrayFactory\Factory;
@@ -142,5 +143,54 @@ class FactoryTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $object = $factory->ensure(['__class' => Car::class], Person::class);
+    }
+
+    /**
+     * @depends testMake
+     */
+    public function testMakeWithDefinitionArguments()
+    {
+        $container = new Container();
+
+        $factory = new Factory($container);
+
+        /* @var $carRent CarRent */
+        $carRent = $factory->make([
+            '__class' => CarRent::class,
+            '__construct()' => [
+                'car' => new Definition([
+                    '__class' => Car::class,
+                    'registrationNumber' => 'argument',
+                ]),
+                'person' => new Definition([
+                    '__class' => Person::class,
+                    '__construct()' => [
+                        'name' => 'John Doe',
+                        'email' => 'argument@example.com',
+                    ],
+                ]),
+            ],
+        ]);
+
+        $this->assertSame('argument@example.com', $carRent->person->email);
+        $this->assertSame('argument', $carRent->car->registrationNumber);
+
+        $carRent = $factory->configure($carRent, [
+            'car' => new Definition([
+                '__class' => Car::class,
+                'registrationNumber' => 'new-by-property',
+            ]),
+        ]);
+        $this->assertSame('new-by-property', $carRent->car->registrationNumber);
+
+        $carRent = $factory->configure($carRent, [
+            'setCar()' => [
+                new Definition([
+                    '__class' => Car::class,
+                    'registrationNumber' => 'new-by-setter',
+                ]),
+            ],
+        ]);
+        $this->assertSame('new-by-setter', $carRent->car->registrationNumber);
     }
 }
