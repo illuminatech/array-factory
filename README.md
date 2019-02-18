@@ -198,9 +198,10 @@ class DetectorServiceProvider extends ServiceProvider
     {
         $this->app->singleton(DetectorContract::class, function ($app) {
             $factory = new Factory($app);
+            
             $factory->make(array_merge(
-                ['__class' => DefaultDetector::class],
-                $app->config->get('geoip', [])
+                ['__class' => DefaultDetector::class], // default config
+                $app->config->get('geoip', []) // developer defined config
             ));
         });
     }
@@ -268,21 +269,185 @@ $car = $factory->make([
 var_dump($car->getType()); // outputs: 'by-di-container'
 ```
 
-> Note: obviously, in case there is a DI container binding for the instantiated class, key '__construct()' inside
+> Note: obviously, in case there is a DI container binding for the instantiated class, the key '__construct()' inside
   array configuration will be ignored.
 
 
-## Immutable methods handling <span id="immutable-methods-handling"></span>
+## Standalone configuration <span id="standalone-configuration"></span>
+
+You may use array factory to configure or re-configure already existing objects. For example:
+
+```php
+<?php
+
+use Illuminatech\ArrayFactory\Factory;
+
+$factory = new Factory();
+
+$car = new Car();
+$car->setType('sedan');
+$car->color('red');
+
+/* @var $car Car */
+$car = $factory->configure([
+    'type' => 'hatchback',
+    'color()' => ['green'],
+]);
+
+var_dump($car->getType()); // outputs: 'hatchback'
+var_dump($car->getColor()); // outputs: 'green'
+```
 
 
 ## Type ensurance <span id="type-ensurance"></span>
+
+You may add extra check whether created object matches particular base class or interface, using `ensure()` method.
+For example:
+
+```php
+<?php
+
+use Illuminate\Support\Carbon;
+use Illuminate\Cache\RedisStore;
+use Illuminate\Contracts\Cache\Store;
+use Illuminatech\ArrayFactory\Factory;
+
+$factory = new Factory();
+
+// successful creation:
+$cache = $factory->ensure(
+    [
+        '__class' => RedisStore::class,
+    ],
+    Store::class
+);
+
+// throws an exception:
+$cache = $factory->ensure(
+    [
+        '__class' => Carbon::class,
+    ],
+    Store::class
+);
+```
+
+## Immutable methods handling <span id="immutable-methods-handling"></span>
+
+[[\Illuminatech\ArrayFactory\Factory]] handles immutable methods during object configuration, returning new object
+from such thier invocations. For example: in case we have following class:
+
+```php
+<?php
+
+class CarImmutable extends Car
+{
+    public function setType(string $type)
+    {
+        $new = clone $this; // immutability
+        $new->setType($type);
+    
+        return $new;
+    }
+    
+    public function color(string $color): self
+    {
+        $new = clone $this; // immutability
+        $new->color($color);
+    
+        return $new;
+    }
+}
+```
+
+The following configuration will be applied correctly:
+
+```php
+<?php
+
+use Illuminatech\ArrayFactory\Factory;
+
+$factory = new Factory();
+
+/* @var $car Car */
+$car = $factory->make([
+    '__class' => CarImmutable::class,
+    'type' => 'sedan',
+    'color()' => ['green'],
+]);
+
+var_dump($car->getType()); // outputs: 'sedan'
+var_dump($car->getColor()); // outputs: 'green'
+```
+
+> Note: since there could be immutable method invocations during configuration, you should always use result
+  of [[\Illuminatech\ArrayFactory\FactoryContract::configure()]] method instead of its argument.
 
 
 ## Recursive make <span id="recursive-make"></span>
 
 For complex object, which stores other object as its inner property, there may be need to configure both host and resident
-objects using array definition and resolve them both via array factory. For this case definition like following mab
+objects using array definition and resolve them both via array factory. For this case definition like following may
 be created: 
 
 ```php
+<?php
+
+$config = [
+    '__class' => Car::class,
+    // ...
+    'engine' => [
+        '__class' => InternalCombustionEngine::class,
+        // ...
+    ],
+];
+```
+
+However, nested definitions are not resolved by array factory automatically. Following example will not instantiate
+engine instance:
+
+```php
+<?php
+
+use Illuminatech\ArrayFactory\Factory;
+
+$factory = new Factory();
+
+$config = [
+    '__class' => Car::class,
+    // ...
+    'engine' => [
+        '__class' => InternalCombustionEngine::class,
+        // ...
+    ],
+];
+
+$car = $factory->make($config);
+var_dump($car->engine); // outputs array
+```
+
+This is done in order to allow setup of the slave internal configuration into created object, so it can resolve it
+in lazy way according to its internal logic.
+
+However, you may enforce resolving of the nested definition wrapping it into [[\Illuminatech\ArrayFactory\Definition]] instance.
+For example:
+
+```php
+<?php
+
+use Illuminatech\ArrayFactory\Factory;
+use Illuminatech\ArrayFactory\Definition;
+
+$factory = new Factory();
+
+$config = [
+    '__class' => Car::class,
+    // ...
+    'engine' => new Definition([
+        '__class' => InternalCombustionEngine::class,
+        // ...
+    ]),
+];
+
+$car = $factory->make($config);
+var_dump($car->engine); // outputs object
 ```
