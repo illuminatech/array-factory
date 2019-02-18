@@ -165,7 +165,7 @@ $car = Factory::make([
 
 The most common use case for array factory is creation of the universal configuration for particular application service.
 Imagine we create a library providing geo-location by IP address detection. Since there are plenty of external services
-and means to solve this task we created some high level contract, like following:
+and means to solve this task, we have created some high level contract, like following:
 
 ```php
 <?php
@@ -180,7 +180,7 @@ interface DetectorContract
 }
 ```
 
-This contact may have multiple different implementation each per each different approach and service. Each particular
+This contact may have multiple different implementations: each per each different approach and service. Each particular
 implementation provides its own set of configuration parameters, which can not be unified.
 Using array factory we can define a service provider for such library in following way:
 
@@ -235,13 +235,13 @@ return [
 ```
 
 Both configuration will work fine with the service provider we created, and same will be for countless other possible
-configuration for different geo-location detectors, which may not even exist yet.
+configurations for different geo-location detectors, which may not even exist yet.
 
 
 ## Interaction with DI container <span id="interaction-with-di-container"></span>
 
 [[\Illuminatech\ArrayFactory\Factory]] is DI aware: it performs object instantiation via [[\Illuminate\Contracts\Container\Container::make()]].
-Thus bindings set withing container will affect object creation. For example:
+Thus bindings set within container will affect object creation. For example:
 
 ```php
 <?php
@@ -289,7 +289,7 @@ $car->setType('sedan');
 $car->color('red');
 
 /* @var $car Car */
-$car = $factory->configure([
+$car = $factory->configure($car, [
     'type' => 'hatchback',
     'color()' => ['green'],
 ]);
@@ -334,7 +334,7 @@ $cache = $factory->ensure(
 ## Immutable methods handling <span id="immutable-methods-handling"></span>
 
 [[\Illuminatech\ArrayFactory\Factory]] handles immutable methods during object configuration, returning new object
-from such thier invocations. For example: in case we have following class:
+from their invocations. For example: in case we have following class:
 
 ```php
 <?php
@@ -425,8 +425,8 @@ $car = $factory->make($config);
 var_dump($car->engine); // outputs array
 ```
 
-This is done in order to allow setup of the slave internal configuration into created object, so it can resolve it
-in lazy way according to its internal logic.
+This is done in order to allow setup of the slave internal configuration into created object, so it be can resolved
+in lazy way according to its own internal logic.
 
 However, you may enforce resolving of the nested definition wrapping it into [[\Illuminatech\ArrayFactory\Definition]] instance.
 For example:
