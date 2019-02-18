@@ -30,8 +30,8 @@ class FactoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(FactoryContract::class, function () {
-            return new Factory($this->app);
+        $this->app->singleton(FactoryContract::class, function ($app) {
+            return new Factory($app);
         });
     }
 }
