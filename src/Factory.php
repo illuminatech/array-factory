@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use Illuminate\Contracts\Container\Container;
 
 /**
- * Factory
+ * Factory is a particular DI aware implementation of {@link FactoryContract}.
  *
  * @see FactoryContract
  * @see Definition
@@ -184,7 +184,7 @@ class Factory implements FactoryContract
     }
 
     /**
-     * Checks if given value is a array actory compatible definition, performs make if it is, skips - if not.
+     * Checks if given value is a array factory compatible definition, performs make if it is, skips - if not.
      *
      * @param  mixed  $candidate candidate value to be checked.
      * @param  Container  $container DI container to be used for making object.
@@ -202,6 +202,8 @@ class Factory implements FactoryContract
     }
 
     /**
+     * Iterates over definition candidates, performing build of the values, which are valid definitions.
+     *
      * @param  iterable  $candidates candidate values to be checked.
      * @param  Container  $container DI container to be used for making objects.
      * @return array

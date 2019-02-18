@@ -39,3 +39,250 @@ Usage
 -----
 
 This extension allows DI aware object creation from array definition.
+Creation is performed by factory defined via [[\Illuminatech\ArrayFactory\FactoryContract]] contract.
+[[\Illuminatech\ArrayFactory\Factory]] can be used for particular implementation.
+Such factory allows creation of any object from its array definition.
+Keys in definition array are processed by following rules:
+
+- '__class': string, full qualified name of the class to be instantiated.
+- '__construct()': array, arguments to be bound during constructor invocation.
+- 'methodName()': array, list of arguments to be passed to the object method, which name defined via key.
+- 'fieldOrProperty': mixed, value to be assigned to the public field or passed to the setter method.
+- '()': callable, PHP callback to be invoked once object has been instantiated and all other configuration applied to it.
+
+Imagine we have the following class defined at our project:
+
+```php
+<?php
+
+class Car
+{
+    public $condition;
+    
+    public $registrationNumber;
+    
+    private $type = 'unknown';
+    
+    private $color = 'unknown';
+    
+    private $engineRunning = false;
+    
+    public function __construct(string $condition)
+    {
+        $this->condition = $condition;
+    }
+    
+    public function setType(string $type)
+    {
+        $this->type = $type;
+    }
+    
+    public function getType(): string
+    {
+        return $this->type;
+    }
+    
+    public function color(string $color): self
+    {
+        $this->color = $color;
+    
+        return $this;
+    }
+    
+    public function startEngine(): self
+    {
+        $this->engineRunning = true;
+
+        return $this;
+    }    
+}
+```
+
+Instance of such class can be instantiated using array factory in the following way:
+
+```php
+<?php
+
+/* @var $factory \Illuminatech\ArrayFactory\FactoryContract */
+
+$car = $factory->make([
+    '__class' => Car::class, // class name
+    '__construct()' => ['condition' => 'good'], // constructor arguments
+    'registrationNumber' => 'AB1234', // set public field `Car::$registrationNumber`
+    'type' => 'sedan', // pass value to the setter `Car::setType()`
+    'color()' => ['red'], // pass arguments to the method `Car::color()`
+    '()' => function (Car $car) {
+         // final adjustments to be made after object creation and other config application:
+         $car->startEngine();
+     },
+]);
+```
+
+The main benefit of array object definition is lazy loading: you can define entire object configuration as a mere array
+without even loading the class source file, and then instantiate actual object only in case it becomes necessary.
+
+Defined array configuration can be adjusted, applying default values for it. For example:
+
+```php
+<?php
+
+/* @var $factory \Illuminatech\ArrayFactory\FactoryContract */
+
+$config = [
+    'registrationNumber' => 'AB1234',
+    'type' => 'sedan',
+    'color()' => ['red'],
+];
+
+// ...
+
+$defaultCarConfig = [
+    '__class' => Car::class,
+    'type' => 'sedan',
+    'condition' => 'good',
+];
+
+$car = $factory->make(array_merge($defaultCarConfig, $config));
+```
+
+You may use [[\Illuminatech\ArrayFactory\Facades\Factory]] facade for quick access to the factory functionality.
+For example:
+
+```php
+<?php
+
+use Illuminatech\ArrayFactory\Facades\Factory;
+
+$car = Factory::make([
+    '__class' => Car::class,
+    'registrationNumber' => 'AB1234',
+    'type' => 'sedan',
+]);
+```
+
+
+## Service configuration <span id="service-configuration"></span>
+
+The most common use case for array factory is creation of the universal configuration for particular application service.
+Imagine we create a library providing geo-location by IP address detection. Since there are plenty of external services
+and means to solve this task we created some high level contract, like following:
+
+```php
+<?php
+
+namespace MyVendor\GeoLocation;
+
+use Illuminate\Http\Request;
+
+interface DetectorContract
+{
+    public function detect(Request $request): LocationInfo;
+}
+```
+
+This contact may have multiple different implementation each per each different approach and service. Each particular
+implementation provides its own set of configuration parameters, which can not be unified.
+Using array factory we can define a service provider for such library in following way:
+
+```php
+<?php
+
+namespace MyVendor\GeoLocation;
+
+use Illuminatech\ArrayFactory\Factory;
+use Illuminate\Support\ServiceProvider;
+
+class DetectorServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->singleton(DetectorContract::class, function ($app) {
+            $factory = new Factory($app);
+            $factory->make(array_merge(
+                ['__class' => DefaultDetector::class],
+                $app->config->get('geoip', [])
+            ));
+        });
+    }
+}
+```
+
+This allows developer to specify any particular detector class to be used along with its configuration. The actual
+configuration file 'config/geoip.php' may look like following:
+
+```php
+<?php
+/* file 'config/geoip.php' */
+
+return [
+    '__class' => \MyVendor\GeoLocation\SomeExternalApiDetector::class,
+    'apiEndpoint' => 'https://some.external.service/api',
+    'apiKey' => env('SOME_EXTERNAL_API_KEY'),
+];
+```
+
+It can also look like following:
+
+```php
+<?php
+/* file 'config/geoip.php' */
+
+return [
+    '__class' => \MyVendor\GeoLocation\LocalFileDetector::class,
+    'geoipDatabaseFile' => __DIR__.'/geoip/local.db',
+];
+```
+
+Both configuration will work fine with the service provider we created, and same will be for countless other possible
+configuration for different geo-location detectors, which may not even exist yet.
+
+
+## Interaction with DI container <span id="interaction-with-di-container"></span>
+
+[[\Illuminatech\ArrayFactory\Factory]] is DI aware: it performs object instantiation via [[\Illuminate\Contracts\Container\Container::make()]].
+Thus bindings set withing container will affect object creation. For example:
+
+```php
+<?php
+
+use Illuminate\Container\Container;
+use Illuminatech\ArrayFactory\Factory;
+
+$container = Container::getInstance();
+
+$factory = new Factory($container);
+
+$container->bind(Car::class, function() {
+    $car = new Car();
+    $car->setType('by-di-container');
+
+    return $car;
+});
+
+/* @var $car Car */
+$car = $factory->make([
+    '__class' => Car::class,
+    'registrationNumber' => 'AB1234',
+]);
+
+var_dump($car->getType()); // outputs: 'by-di-container'
+```
+
+> Note: obviously, in case there is a DI container binding for the instantiated class, key '__construct()' inside
+  array configuration will be ignored.
+
+
+## Immutable methods handling <span id="immutable-methods-handling"></span>
+
+
+## Type ensurance <span id="type-ensurance"></span>
+
+
+## Recursive make <span id="recursive-make"></span>
+
+For complex object, which stores other object as its inner property, there may be need to configure both host and resident
+objects using array definition and resolve them both via array factory. For this case definition like following mab
+be created: 
+
+```php
+```

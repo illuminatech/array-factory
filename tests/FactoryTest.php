@@ -2,10 +2,10 @@
 
 namespace Illuminatech\ArrayFactory\Test;
 
-use Illuminatech\ArrayFactory\Definition;
 use InvalidArgumentException;
 use Illuminate\Container\Container;
 use Illuminatech\ArrayFactory\Factory;
+use Illuminatech\ArrayFactory\Definition;
 use Illuminatech\ArrayFactory\Test\Support\Car;
 use Illuminatech\ArrayFactory\Test\Support\Person;
 use Illuminatech\ArrayFactory\Test\Support\CarRent;
@@ -192,5 +192,39 @@ class FactoryTest extends TestCase
             ],
         ]);
         $this->assertSame('new-by-setter', $carRent->car->registrationNumber);
+    }
+
+    /**
+     * @depends testConfigure
+     */
+    public function testUnExistingProperty()
+    {
+        $factory = new Factory();
+
+        $object = new Car();
+
+        $config = [
+            'unExistingProperty' => 'value',
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $configuredObject = $factory->configure($object, $config);
+    }
+
+    /**
+     * @depends testMake
+     */
+    public function testMakeInvalidDefinition()
+    {
+        $container = new Container();
+
+        $factory = new Factory($container);
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $object = $factory->make([
+            'name' => 'value',
+        ]);
     }
 }

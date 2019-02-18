@@ -10,7 +10,33 @@ namespace Illuminatech\ArrayFactory;
 use Illuminate\Contracts\Container\Container;
 
 /**
- * FactoryContract
+ * FactoryContract defines the contract for array factory.
+ *
+ * Such factory allows creation of any object from its array definition.
+ * Keys in definition array are processed by following rules:
+ *
+ * - '__class': string, full qualified name of the class to be instantiated.
+ * - '__construct()': array, arguments to be bound during constructor invocation.
+ * - 'methodName()': array, list of arguments to be passed to the object method, which name defined via key.
+ * - 'fieldOrProperty': mixed, value to be assigned to the public field or passed to the setter method.
+ * - '()': callable, PHP callback to be invoked once object has been instantiated and all other configuration applied to it.
+ *
+ * For example:
+ *
+ * ```php
+ * $factory->make([
+ *     '__class' => Item::class,
+ *     '__construct()' => ['constructorArgument' => 'initial'],
+ *     'publicField' => 'value assigned to public field',
+ *     'virtualProperty' => 'value passed to setter method',
+ *     'someMethod()' => ['method argument1', 'method argument2'],
+ *     '()' => function (Item $item) {
+ *          // final adjustments
+ *      },
+ * ]);
+ * ```
+ *
+ * @see Definition
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
