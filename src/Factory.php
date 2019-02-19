@@ -109,7 +109,9 @@ class Factory implements FactoryContract
 
             if (substr($action, -2) === '()') {
                 // method call
-                $result = call_user_func_array([$object, substr($action, 0, -2)], $this->makeIfDefinitionArray($arguments, $container));
+                $container = $container ?? $this->getContainer();
+
+                $result = $container->call([$object, substr($action, 0, -2)], $this->makeIfDefinitionArray($arguments, $container));
 
                 // handle immutable methods
                 $object = $this->chooseNewObject($object, $result);
@@ -138,7 +140,7 @@ class Factory implements FactoryContract
         }
 
         if ($finalHandler !== null) {
-            $result = call_user_func($finalHandler, $object);
+            $result = call_user_func($finalHandler, $object, $this);
 
             // handle possible immutability
             $object = $this->chooseNewObject($object, $result);

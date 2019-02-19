@@ -272,6 +272,68 @@ var_dump($car->getType()); // outputs: 'by-di-container'
 > Note: obviously, in case there is a DI container binding for the instantiated class, the key '__construct()' inside
   array configuration will be ignored.
 
+DI container is also used during configuration method invocations, allowing automatic arguments injection. For example:
+
+```php
+<?php
+
+use Illuminate\Container\Container;
+use Illuminatech\ArrayFactory\Factory;
+
+class Person
+{
+    public $carRents = [];
+    
+    public function rentCar(Car $car, $price)
+    {
+        $this->carRents[] = ['car' => $car, 'price' => $price];
+    }
+}
+
+$container = Container::getInstance();
+
+$factory = new Factory($container);
+
+$container->bind(Car::class, function() {
+    $car = new Car();
+    $car->setType('by-di-container');
+
+    return $car;
+});
+
+/* @var $person Person */
+$person = $factory->make([
+    '__class' => Person::class,
+    'rentCar()' => ['price' => 12],
+]);
+
+var_dump($person->carRents[0]['car']->getType()); // outputs: 'by-di-container'
+var_dump($person->carRents[0]['price']); // outputs: '12'
+```
+
+Note that final handler callback ('()' configuration key) is not DI aware and does not provide binding for its arguments.
+However, the factory instance is always passed as its second argument allowing you to access to its DI container if needed.
+Following code will produce the same result as the one from previous example:
+
+```php
+<?php
+
+use Illuminate\Container\Container;
+use Illuminatech\ArrayFactory\Factory;
+
+$container = Container::getInstance();
+
+$factory = new Factory($container);
+
+/* @var $person Person */
+$person = $factory->make([
+    '__class' => Person::class,
+    '()' => function (Person $person, Factory $factory) {
+        $factory->getContainer()->call([$person, 'rentCar'], ['price' => 12]);
+    },
+]);
+```
+
 
 ## Standalone configuration <span id="standalone-configuration"></span>
 
@@ -344,7 +406,7 @@ class CarImmutable extends Car
     public function setType(string $type)
     {
         $new = clone $this; // immutability
-        $new->setType($type);
+        $new->type = $type;
     
         return $new;
     }
@@ -352,7 +414,7 @@ class CarImmutable extends Car
     public function color(string $color): self
     {
         $new = clone $this; // immutability
-        $new->color($color);
+        $new->color = $color;
     
         return $new;
     }

@@ -22,7 +22,7 @@ class FactoryTest extends TestCase
             'registrationNumber' => 'AB1234',
             'type' => 'sedan',
             'color()' => ['red'],
-            '()' => function (Car $car) {
+            '()' => function (Car $car, Factory $factory) {
                 $car->startEngine();
             },
         ];
@@ -130,6 +130,36 @@ class FactoryTest extends TestCase
     }
 
     /**
+     * @depends testMakeWithBindings
+     */
+    public function testMakeByMethodBindings()
+    {
+        $container = new Container();
+
+        $factory = new Factory($container);
+
+        $container->singleton(Car::class, function() {
+            $car = new Car();
+            $car->registrationNumber = 'di-container';
+
+            return $car;
+        });
+
+        /* @var $person Person */
+        $person = $factory->make([
+            '__class' => Person::class,
+            '__construct()' => [
+                'name' => 'John Doe',
+                'email' => 'johndoe@example.com',
+            ],
+            'rentCar()' => ['price' => 10],
+        ]);
+
+        $this->assertCount(1, $person->carRents);
+        $this->assertSame(10, $person->carRents[0]->price);
+    }
+
+    /**
      * @depends testMake
      */
     public function testEnsure()
@@ -185,7 +215,7 @@ class FactoryTest extends TestCase
 
         $carRent = $factory->configure($carRent, [
             'setCar()' => [
-                new Definition([
+                'car' => new Definition([
                     '__class' => Car::class,
                     'registrationNumber' => 'new-by-setter',
                 ]),

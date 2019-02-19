@@ -14,6 +14,11 @@ class CarRent
      */
     public $car;
 
+    /**
+     * @var float|int
+     */
+    public $price = 0;
+
     public function __construct(Person $person, Car $car)
     {
         $this->person = $person;
