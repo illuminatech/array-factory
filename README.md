@@ -180,9 +180,9 @@ interface DetectorContract
 }
 ```
 
-This contact may have multiple different implementations: each per each different approach and service. Each particular
+This contract may have multiple different implementations: each per each different approach and service. Each particular
 implementation provides its own set of configuration parameters, which can not be unified.
-Using array factory we can define a service provider for such library in following way:
+Using array factory, we can define a service provider for such library in following way:
 
 ```php
 <?php
@@ -244,7 +244,7 @@ face the error during configuration caching.
 ## Interaction with DI container <span id="interaction-with-di-container"></span>
 
 [[\Illuminatech\ArrayFactory\Factory]] is DI aware: it performs object instantiation via [[\Illuminate\Contracts\Container\Container::make()]].
-Thus bindings set within container will affect object creation. For example:
+Thus bindings set within the container will affect object creation. For example:
 
 ```php
 <?php
@@ -315,7 +315,7 @@ var_dump($person->carRents[0]['price']); // outputs: '12'
 ```
 
 Note that final handler callback ('()' configuration key) is not DI aware and does not provide binding for its arguments.
-However, the factory instance is always passed as its second argument allowing you to access to its DI container if needed.
+However, the factory instance is always passed as its second argument, allowing you to access to its DI container if needed.
 Following code will produce the same result as the one from previous example:
 
 ```php
