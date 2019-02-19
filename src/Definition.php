@@ -7,6 +7,8 @@
 
 namespace Illuminatech\ArrayFactory;
 
+use InvalidArgumentException;
+
 /**
  * Definition represents array factory compatible definition.
  *
@@ -50,5 +52,24 @@ class Definition
     public function __construct($definition)
     {
         $this->definition = $definition;
+    }
+
+    /**
+     * Restores class state after using `var_export()`.
+     * @see var_export()
+     *
+     * @param  array  $state state to be restored from.
+     * @return static restored instance.
+     * @throws InvalidArgumentException when $state property does not contain `id` parameter.
+     */
+    public static function __set_state($state)
+    {
+        if (! isset($state['definition'])) {
+            throw new InvalidArgumentException(
+                'Failed to instantiate class "'.get_called_class().'". Required parameter "definition" is missing.'
+            );
+        }
+
+        return new self($state['definition']);
     }
 }

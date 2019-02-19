@@ -237,6 +237,9 @@ return [
 Both configuration will work fine with the service provider we created, and same will be for countless other possible
 configurations for different geo-location detectors, which may not even exist yet.
 
+**Heads up!** Remember to avoid usage of [[\Closure]], while creating application configuration, otherwise you will
+face the error during configuration caching.
+
 
 ## Interaction with DI container <span id="interaction-with-di-container"></span>
 
