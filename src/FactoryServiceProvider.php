@@ -8,23 +8,19 @@
 namespace Illuminatech\ArrayFactory;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Support\DeferrableProvider;
 
 /**
  * FactoryServiceProvider bootstraps array factory to Laravel application.
  *
- * This service provider registers array factoryas a singleton, facilitating functioning of the
+ * This service provider registers array factory as a singleton, facilitating functioning of the
  * {@link \Illuminatech\ArrayFactory\Facades\Factory} facade.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class FactoryServiceProvider extends ServiceProvider
+class FactoryServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $defer = true;
-
     /**
      * {@inheritdoc}
      */

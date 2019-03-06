@@ -15,10 +15,10 @@
         }
     ],
     "require": {
-        "illuminate/support": "^5.6"
+        "illuminate/support": "^5.8"
     },
     "require-dev": {
-        "illuminate/container": "^5.6"
+        "illuminate/container": "^5.8"
     },
     "autoload": {
         "psr-4": {
