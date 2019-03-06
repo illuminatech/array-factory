@@ -34,4 +34,14 @@ class FactoryServiceProvider extends ServiceProvider
             return new Factory($app);
         });
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function provides()
+    {
+        return [
+            FactoryContract::class,
+        ];
+    }
 }
