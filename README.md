@@ -10,8 +10,8 @@ This extension allows DI aware object creation from array definition.
 
 For license information check the [LICENSE](LICENSE.md)-file.
 
-[![Latest Stable Version](https://poser.pugx.org/illuminatech/array-factory/v/stable.png)](https://packagist.org/packages/illuminatech/array-factory)
-[![Total Downloads](https://poser.pugx.org/illuminatech/array-factory/downloads.png)](https://packagist.org/packages/illuminatech/array-factory)
+[![Latest Stable Version](https://img.shields.io/packagist/v/illuminatech/array-factory.svg)](https://packagist.org/packages/illuminatech/array-factory)
+[![Total Downloads](https://img.shields.io/packagist/dt/illuminatech/array-factory.svg)](https://packagist.org/packages/illuminatech/array-factory)
 [![Build Status](https://travis-ci.org/illuminatech/array-factory.svg?branch=master)](https://travis-ci.org/illuminatech/array-factory)
 
 
@@ -39,8 +39,8 @@ Usage
 -----
 
 This extension allows DI aware object creation from array definition.
-Creation is performed by factory defined via [[\Illuminatech\ArrayFactory\FactoryContract]] contract.
-[[\Illuminatech\ArrayFactory\Factory]] can be used for particular implementation.
+Creation is performed by factory defined via `\Illuminatech\ArrayFactory\FactoryContract` contract.
+`\Illuminatech\ArrayFactory\Factory` can be used for particular implementation.
 Such factory allows creation of any object from its array definition.
 Keys in definition array are processed by following rules:
 
@@ -145,7 +145,7 @@ $defaultCarConfig = [
 $car = $factory->make(array_merge($defaultCarConfig, $config));
 ```
 
-You may use [[\Illuminatech\ArrayFactory\Facades\Factory]] facade for quick access to the factory functionality.
+You may use `\Illuminatech\ArrayFactory\Facades\Factory` facade for quick access to the factory functionality.
 For example:
 
 ```php
@@ -237,13 +237,13 @@ return [
 Both configuration will work fine with the service provider we created, and same will be for countless other possible
 configurations for different geo-location detectors, which may not even exist yet.
 
-**Heads up!** Remember to avoid usage of [[\Closure]], while creating application configuration, otherwise you will
+**Heads up!** Remember to avoid usage of `\Closure`, while creating application configuration, otherwise you will
 face the error during configuration caching.
 
 
 ## Interaction with DI container <span id="interaction-with-di-container"></span>
 
-[[\Illuminatech\ArrayFactory\Factory]] is DI aware: it performs object instantiation via [[\Illuminate\Contracts\Container\Container::make()]].
+`\Illuminatech\ArrayFactory\Factory` is DI aware: it performs object instantiation via `\Illuminate\Contracts\Container\Container::make()`.
 Thus bindings set within the container will affect object creation. For example:
 
 ```php
@@ -398,7 +398,7 @@ $cache = $factory->ensure(
 
 ## Immutable methods handling <span id="immutable-methods-handling"></span>
 
-[[\Illuminatech\ArrayFactory\Factory]] handles immutable methods during object configuration, returning new object
+`\Illuminatech\ArrayFactory\Factory` handles immutable methods during object configuration, returning new object
 from their invocations. For example: in case we have following class:
 
 ```php
@@ -445,7 +445,7 @@ var_dump($car->getColor()); // outputs: 'green'
 ```
 
 > Note: since there could be immutable method invocations during configuration, you should always use result
-  of [[\Illuminatech\ArrayFactory\FactoryContract::configure()]] method instead of its argument.
+  of `\Illuminatech\ArrayFactory\FactoryContract::configure()` method instead of its argument.
 
 
 ## Recursive make <span id="recursive-make"></span>
@@ -493,7 +493,7 @@ var_dump($car->engine); // outputs array
 This is done in order to allow setup of the slave internal configuration into created object, so it be can resolved
 in lazy way according to its own internal logic.
 
-However, you may enforce resolving of the nested definition wrapping it into [[\Illuminatech\ArrayFactory\Definition]] instance.
+However, you may enforce resolving of the nested definition wrapping it into `\Illuminatech\ArrayFactory\Definition` instance.
 For example:
 
 ```php
