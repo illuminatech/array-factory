@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use Illuminate\Contracts\Container\Container;
 
 /**
- * Factory is a particular DI aware implementation of {@link FactoryContract}.
+ * Factory is a particular DI aware implementation of {@see FactoryContract}.
  *
  * @see FactoryContract
  * @see Definition
@@ -223,7 +223,7 @@ class Factory implements FactoryContract
     }
 
     /**
-     * Returns default DI container to be used for {@link $container}.
+     * Returns default DI container to be used for {@see $container}.
      *
      * @return Container DI container instance.
      */

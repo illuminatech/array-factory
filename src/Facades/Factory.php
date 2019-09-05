@@ -13,7 +13,7 @@ use Illuminatech\ArrayFactory\FactoryContract;
 /**
  * Factory is a facade for array factory access.
  *
- * This facade requires {@link \Illuminatech\ArrayFactory\FactoryContract} implementation to be bound as singleton
+ * This facade requires {@see \Illuminatech\ArrayFactory\FactoryContract} implementation to be bound as singleton
  * to the application service container.
  *
  * @see \Illuminatech\ArrayFactory\FactoryContract

@@ -40,7 +40,7 @@ use InvalidArgumentException;
 class Definition
 {
     /**
-     * @var array|string raw definition for {@link FactoryContract::make()}
+     * @var array|string raw definition for {@see FactoryContract::make()}
      */
     public $definition;
 
