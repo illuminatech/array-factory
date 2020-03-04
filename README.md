@@ -364,7 +364,7 @@ var_dump($car->getColor()); // outputs: 'green'
 ```
 
 
-## Type ensurance <span id="type-ensurance"></span>
+## Type ensuring <span id="type-ensuring"></span>
 
 You may add extra check whether created object matches particular base class or interface, using `ensure()` method.
 For example:
