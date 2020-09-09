@@ -1,8 +1,8 @@
 Laravel Array Factory Change Log
 ================================
 
-1.2.2 Under Development
------------------------
+1.2.2, September 9, 2020
+------------------------
 
 - Enh: Added support for "illuminate/support" 8.0 (klimov-paul)
 
