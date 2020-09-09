@@ -7,8 +7,8 @@
 
 namespace Illuminatech\ArrayFactory;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
 /**
  * FactoryServiceProvider bootstraps array factory to Laravel application.

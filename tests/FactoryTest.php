@@ -2,13 +2,13 @@
 
 namespace Illuminatech\ArrayFactory\Test;
 
-use InvalidArgumentException;
 use Illuminate\Container\Container;
-use Illuminatech\ArrayFactory\Factory;
 use Illuminatech\ArrayFactory\Definition;
+use Illuminatech\ArrayFactory\Factory;
 use Illuminatech\ArrayFactory\Test\Support\Car;
-use Illuminatech\ArrayFactory\Test\Support\Person;
 use Illuminatech\ArrayFactory\Test\Support\CarRent;
+use Illuminatech\ArrayFactory\Test\Support\Person;
+use InvalidArgumentException;
 
 class FactoryTest extends TestCase
 {
@@ -27,7 +27,7 @@ class FactoryTest extends TestCase
             },
         ];
 
-        /* @var $configuredObject Car */
+        /** @var $configuredObject Car */
         $configuredObject = $factory->configure($object, $config);
 
         $this->assertSame($object, $configuredObject);
@@ -42,7 +42,7 @@ class FactoryTest extends TestCase
      */
     public function testConfigureImmutable()
     {
-        /* @var $configuredObject Car */
+        /** @var $configuredObject Car */
         $factory = new Factory();
 
         $object = new Car();
@@ -115,7 +115,7 @@ class FactoryTest extends TestCase
             return $car;
         });
 
-        /* @var $car Car */
+        /** @var $car Car */
         $car = $factory->make(Car::class);
         $this->assertSame('di-container', $car->registrationNumber);
 
@@ -123,7 +123,7 @@ class FactoryTest extends TestCase
             return new Person('John Doe', 'container@example.com');
         });
 
-        /* @var $carRent CarRent */
+        /** @var $carRent CarRent */
         $carRent = $factory->make(CarRent::class);
         $this->assertSame('container@example.com', $carRent->person->email);
         $this->assertSame('di-container', $carRent->car->registrationNumber);
@@ -145,7 +145,7 @@ class FactoryTest extends TestCase
             return $car;
         });
 
-        /* @var $person Person */
+        /** @var $person Person */
         $person = $factory->make([
             '__class' => Person::class,
             '__construct()' => [
@@ -184,7 +184,7 @@ class FactoryTest extends TestCase
 
         $factory = new Factory($container);
 
-        /* @var $carRent CarRent */
+        /** @var $carRent CarRent */
         $carRent = $factory->make([
             '__class' => CarRent::class,
             '__construct()' => [

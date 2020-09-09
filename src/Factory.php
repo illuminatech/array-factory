@@ -7,9 +7,9 @@
 
 namespace Illuminatech\ArrayFactory;
 
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use Illuminate\Contracts\Container\Container;
 
 /**
  * Factory is a particular DI aware implementation of {@see FactoryContract}.
