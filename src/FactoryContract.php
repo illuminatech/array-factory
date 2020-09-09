@@ -29,7 +29,7 @@ use Illuminate\Contracts\Container\Container;
  *     '__construct()' => ['constructorArgument' => 'initial'],
  *     'publicField' => 'value assigned to public field',
  *     'virtualProperty' => 'value passed to setter method',
- *     'someMethod()' => ['method argument1', 'method argument2'],
+ *     'someMethod()' => ['argument1' => 'value1', 'argument2' => 'value2'],
  *     '()' => function (Item $item) {
  *          // final adjustments
  *      },

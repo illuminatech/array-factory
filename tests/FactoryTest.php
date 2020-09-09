@@ -21,7 +21,7 @@ class FactoryTest extends TestCase
         $config = [
             'registrationNumber' => 'AB1234',
             'type' => 'sedan',
-            'color()' => ['red'],
+            'color()' => ['color' => 'red'],
             '()' => function (Car $car, Factory $factory) {
                 $car->startEngine();
             },
@@ -33,7 +33,7 @@ class FactoryTest extends TestCase
         $this->assertSame($object, $configuredObject);
         $this->assertSame($config['registrationNumber'], $configuredObject->registrationNumber);
         $this->assertSame($config['type'], $configuredObject->getType());
-        $this->assertSame($config['color()'][0], $configuredObject->getColor());
+        $this->assertSame($config['color()']['color'], $configuredObject->getColor());
         $this->assertSame(true, $configuredObject->isEngineRunning());
     }
 
@@ -54,7 +54,7 @@ class FactoryTest extends TestCase
 
         $object = new Car();
         $configuredObject = $factory->configure($object, [
-            'colorImmutable()' => ['red'],
+            'colorImmutable()' => ['color' => 'red'],
         ]);
         $this->assertNotSame($object, $configuredObject);
         $this->assertSame('red', $configuredObject->getColor());
