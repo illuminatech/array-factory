@@ -12,7 +12,7 @@ For license information check the [LICENSE](LICENSE.md)-file.
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/illuminatech/array-factory.svg)](https://packagist.org/packages/illuminatech/array-factory)
 [![Total Downloads](https://img.shields.io/packagist/dt/illuminatech/array-factory.svg)](https://packagist.org/packages/illuminatech/array-factory)
-[![Build Status](https://travis-ci.org/illuminatech/array-factory.svg?branch=master)](https://travis-ci.org/illuminatech/array-factory)
+[![Build Status](https://github.com/illuminatech/array-factory/workflows/build/badge.svg)](https://github.com/illuminatech/array-factory/actions)
 
 
 Installation
