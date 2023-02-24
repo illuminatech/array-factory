@@ -1,8 +1,8 @@
 Laravel Array Factory Change Log
 ================================
 
-1.2.4 Under Development
------------------------
+1.2.4, February 24, 2023
+------------------------
 
 - Enh #1: Added support for "illuminate/support" 10.0 (klimov-paul)
 
