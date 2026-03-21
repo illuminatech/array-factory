@@ -1,6 +1,12 @@
 Laravel Array Factory Change Log
 ================================
 
+1.2.7 Under Development
+-----------------------
+
+- Enh: Added support for "illuminate/support" 13.0 (klimov-paul)
+
+
 1.2.6, March 6, 2025
 --------------------
 

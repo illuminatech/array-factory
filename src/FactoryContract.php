@@ -50,7 +50,7 @@ interface FactoryContract
      * @param  Container|null  $container DI container instance.
      * @return object created object.
      */
-    public function make($definition, Container $container = null);
+    public function make($definition, ?Container $container = null);
 
     /**
      * Configures existing object applying given configuration to it.
@@ -60,7 +60,7 @@ interface FactoryContract
      * @param  Container|null  $container DI container instance.
      * @return object configured object.
      */
-    public function configure($object, iterable $config, Container $container = null);
+    public function configure($object, iterable $config, ?Container $container = null);
 
     /**
      * Resolves the specified reference into the actual object and makes sure it is of the specified type.
@@ -70,5 +70,5 @@ interface FactoryContract
      * @param  Container|null  $container DI container instance.
      * @return object created object.
      */
-    public function ensure($reference, string $type = null, Container $container = null);
+    public function ensure($reference, ?string $type = null, ?Container $container = null);
 }

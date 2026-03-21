@@ -32,7 +32,7 @@ class Factory implements FactoryContract
      *
      * @param  Container|null  $container DI container to be used.
      */
-    public function __construct(Container $container = null)
+    public function __construct(?Container $container = null)
     {
         if ($container !== null) {
             $this->setContainer($container);
@@ -65,7 +65,7 @@ class Factory implements FactoryContract
     /**
      * {@inheritdoc}
      */
-    public function make($definition, Container $container = null)
+    public function make($definition, ?Container $container = null)
     {
         $container = $container ?? $this->getContainer();
 
@@ -96,7 +96,7 @@ class Factory implements FactoryContract
     /**
      * {@inheritdoc}
      */
-    public function configure($object, iterable $config, Container $container = null)
+    public function configure($object, iterable $config, ?Container $container = null)
     {
         $finalHandler = null;
 
@@ -152,7 +152,7 @@ class Factory implements FactoryContract
     /**
      * {@inheritdoc}
      */
-    public function ensure($reference, string $type = null, Container $container = null)
+    public function ensure($reference, ?string $type = null, ?Container $container = null)
     {
         if (! is_object($reference)) {
             $reference = $this->make($reference, $container);
@@ -170,7 +170,7 @@ class Factory implements FactoryContract
     /**
      * Picks the new object to be used from original trusted one and new possible candidate.
      * This method is used to handle possible immutable creating methods, when method invocation
-     * does not alters object state, but creates new object instead.
+     * does not alter object state, but creates new object instead.
      *
      * @param  object  $original original object.
      * @param  object|mixed  $candidate candidate value.
@@ -192,7 +192,7 @@ class Factory implements FactoryContract
      * @param  Container  $container DI container to be used for making object.
      * @return object|mixed resolved object or intact candidate.
      */
-    private function makeIfDefinition($candidate, Container $container = null)
+    private function makeIfDefinition($candidate, ?Container $container)
     {
         $container = $container ?? $this->getContainer();
 
@@ -210,7 +210,7 @@ class Factory implements FactoryContract
      * @param  Container  $container DI container to be used for making objects.
      * @return array
      */
-    private function makeIfDefinitionArray(iterable $candidates, Container $container = null): array
+    private function makeIfDefinitionArray(iterable $candidates, ?Container $container): array
     {
         $container = $container ?? $this->getContainer();
 
